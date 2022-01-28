@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hahmlet&family=Noto+Sans+KR&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            font-family: 'Hahmlet', serif;
+            font-family: 'Noto Sans KR', sans-serif;
+            background-image: url('./backgrade');
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        .container{
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .item{
+            width: 18em;
+            height: 9em;
+            text-align: center;
+            font-size: 2em;
+        }
+        input[type=button]{
+            font-family: 'Hahmlet', serif;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1em;
+            width: 3em;
+            height: 1.7em;
+            text-align: center;
+            border-radius: 20px;
+            border: none;
+        }
+        input[type=button]:hover{
+            font-family: 'Hahmlet', serif;
+            font-family: 'Noto Sans KR', sans-serif;
+            font-size: 1em;
+            width: 3em;
+            height: 1.7em;
+            text-align: center;
+            border-radius: 20px;
+            border: none;
+            box-shadow: 5px 5px 5px gray;
+        }
+    </style>
+    <script>
+        function menupage(){
+            location.href = "/menu";
+        }
+    </script>
+    <title>Tank Game</title>
+</head>
+<body>
+    <div class="container">
+        <div class="item">
+            <h1>Tank Game</h1>
+            <input type="button" value="Start" onclick="menupage()">
+        </div>
+    </div>
+</body>
+</html>

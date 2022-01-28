@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hahmlet&family=Noto+Sans+KR&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            font-family: 'Hahmlet', serif;
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #eee;
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        .container1{
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container2{
+            width: 100em;
+            height: 50em;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .m1{
+            width: 20em;
+            height: 30em;
+            display: flex;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .m2{
+            width: 20em;
+            height: 40em;
+            display: flex;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .m3{
+            width: 20em;
+            height: 20em;
+            display: flex;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .pan{
+            width: 100em;
+            height: 6em;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .pan1{
+            width: 80em;
+            height: 6em;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .item{
+            width: 100em;
+            height: 60em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .item1{
+            width: 15em;
+            height: 6em;
+            border-radius: 20px;
+            background-color: rgb(255, 255, 255);
+        }
+        .item2{
+            width: 80em;
+            height: 40em;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-evenly;
+            border-radius: 20px;
+            background-color: rgb(255, 255, 255);
+        }
+        .item3{
+            width: 100em;
+            height: 5em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        input[type=button]{
+            font-family: 'Hahmlet', serif;
+            font-family: 'Noto Sans KR', sans-serif;
+            width: 5em;
+            height: 2em;
+            font-size: 1.2em;
+            text-align: center;
+            border-radius: 10px;
+            border: none;
+            background-color: rgb(255, 255, 255);
+        }
+        input[type=button]:hover{
+            font-family: 'Hahmlet', serif;
+            font-family: 'Noto Sans KR', sans-serif;
+            width: 5em;
+            height: 2em;
+            font-size: 1.2em;
+            text-align: center;
+            border-radius: 10px;
+            border: none;
+            box-shadow: 2px 2px 2px gray;
+            background-color: rgb(255, 255, 255);
+        }
+        .in1, .in3, .in5{
+            width: 10em;
+            height: 5em; 
+            font-size: 1.5em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .in2{
+            width: 12em;
+            height: 20em;  
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: rgb(240, 125, 165);
+        }
+        .in4{
+            width: 12em;
+            height: 30em;  
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: rgb(85, 200, 115);
+        }
+        .in6{
+            width: 12em;
+            height: 10em; 
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            background-color: rgb(85, 115, 200);
+        }
+    </style>
+    <script>
+        function menupage(){
+            location.href = "/menu";
+        }
+    </script>
+    <title>Tank Game</title>
+</head>
+<body>
+    <div class="container1">
+        <div class="container2">
+            <div class="pan">
+                <div class="pan1">
+                    <div class="item1">
+                        <h1>랭킹</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="item2">
+                    <div class="m1">
+                        <div class="in1">
+                            Name : <%= _2nd.name %> <br>
+                            Kill : <%= _2nd.kill %> <br>
+                            Time : <%= parseInt((_2nd.time/3600)%100) %>:<%= parseInt(_2nd.time/60) %>:<%= parseInt(_2nd.time%60) %> <br>
+                        </div>
+                        <div class="in2">
+                            <br><br>
+                            <div style="font-size: 4em; font-weight: bolder;">
+                                2
+                            </div>
+                        </div>
+                    </div>
+                    <div class="m2">
+                        <div class="in3">
+                            Name : <%= _1st.name %> <br>
+                            Kill : <%= _1st.kill %> <br>
+                            Time : <%= parseInt((_1st.time/3600)%100) %>:<%= parseInt(_1st.time/60) %>:<%= parseInt(_1st.time%60) %> <br>
+                        </div>
+                        <div class="in4">
+                            <br><br><br>
+                            <div style="font-size: 4em; font-weight: bolder;">
+                                1
+                            </div>
+                        </div>
+                    </div>
+                    <div class="m3">
+                        <div class="in5">
+                            Name : <%= _3rd.name %> <br>
+                            Kill : <%= _3rd.kill %> <br>
+                            Time : <%= parseInt((_3rd.time/3600)%100) %>:<%= parseInt(_3rd.time/60) %>:<%= parseInt(_3rd.time%60) %> <br>
+                        </div>
+                        <div class="in6">
+                            <br>
+                            <div style="font-size: 4em; font-weight: bolder;">
+                                3
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="item3">
+                <input type="button" value="돌아가기" onclick="menupage()">
+            </div>
+        </div>
+        
+    </div>
+</body>
+</html>

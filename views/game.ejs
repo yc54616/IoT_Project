@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.js"></script>
+    <style>
+    	html, body {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        .container{
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+    	canvas { 
+            background: #eee; 
+            display: block; 
+            margin: 0 auto; 
+        }
+    </style>
+    <title>Tank Game</title>
+</head>
+<body>
+    <div class="container">
+        <canvas id="canvas" width="1280" height="720"></canvas>
+    </div>
+    
+    <script>
+        var socket = io();
+
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+
+        var rightPressed = false;
+        var leftPressed = false;
+        var downPressed = false;
+        var upPressed = false;
+        var rightAttack = false;
+        var leftAttack = false;
+        var downAttack = false;
+        var upAttack = false;
+
+        var Speed = 2;
+
+        document.addEventListener("keydown", keyDownHandler,false);
+        document.addEventListener("keyup", keyUpHandler,false);
+
+        function keyDownHandler(e){
+            if (e.code == 'ArrowRight'){
+                rightPressed = true;
+            }
+            if (e.code == 'ArrowLeft'){
+                leftPressed = true;
+            }
+            if(e.code == "ArrowDown"){
+                downPressed = true;
+            }
+            if(e.code == "ArrowUp"){
+                upPressed = true;
+            }
+
+            if (e.code == 'KeyD'){
+                rightAttack = true;
+            }
+            if (e.code == 'KeyA'){
+                leftAttack = true;
+            }
+            if(e.code === "KeyS"){
+                downAttack = true;
+            }
+            if(e.code === "KeyW"){
+                upAttack = true;
+            }
+        }
+
+        function keyUpHandler(e){
+            if (e.code == "ArrowRight"){
+                rightPressed = false;
+            }
+            if (e.code == "ArrowLeft"){
+                leftPressed = false;
+            }
+            if(e.code == "ArrowDown"){
+                downPressed = false;
+            }
+            if(e.code == "ArrowUp"){
+                upPressed = false;
+            }
+
+            if (e.code == 'KeyD'){
+                rightAttack = false;
+            }
+            if (e.code == 'KeyA'){
+                leftAttack = false;
+            }
+            if(e.code === "KeyS"){
+                downAttack = false;
+            }
+            if(e.code === "KeyW"){
+                upAttack = false;
+            }
+        }
+
+        class Tank{
+            constructor(id){
+                this.id = id;
+                this.x;
+                this.y;
+                this.width;
+                this.height;
+                this.color;
+                this.name = "name";
+                this.angle;
+            }
+            draw(){
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);   
+                ctx.font = 'bold 20px 맑은고딕';
+                ctx.fillStyle = 'black';
+                ctx.textAlign = "center";
+                ctx.fillText(`${this.name}`, this.x + 25, this.y + 31, this.width - 5, this.height);        
+                ctx.fillStyle = this.color;
+                if(this.angle == 'up'){
+                    ctx.fillRect(this.x+10, this.y-10, this.width-20, this.height-40);
+                }
+                if(this.angle == 'left'){
+                    ctx.fillRect(this.x-10, this.y+10, this.width-40, this.height-20);
+                }
+                if(this.angle == 'down'){
+                    ctx.fillRect(this.x+10, this.y+50, this.width-20, this.height-40);
+                }
+                if(this.angle == 'right'){
+                    ctx.fillRect(this.x+50, this.y+10, this.width-40, this.height-20);
+                }   
+            }
+        }
+
+        class Bullet{
+            constructor(id, angle){
+                this.id = id;
+                this.x;
+                this.y;
+                this.width = 10;
+                this.height = 10;
+                for(var i = 0; i < tanks.length; ++i){
+                    if(tanks[i].id == id){
+                        this.color = tanks[i].color;
+                        break;
+                    }
+                }
+                this.angle = angle;
+                if(this.angle == 'right'){
+                    this.x = mytank.x + 50;
+                    this.y = mytank.y + 20;
+                }
+                if(this.angle == 'left'){
+                    this.x = mytank.x - 10;
+                    this.y = mytank.y + 20;
+                }
+                if(this.angle == 'up'){
+                    this.x = mytank.x + 20;
+                    this.y = mytank.y - 10;
+                }
+                if(this.angle == 'down'){
+                    this.x = mytank.x + 20;
+                    this.y = mytank.y + 50;
+                }
+            }
+            draw(){
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+            move(){
+                if(this.angle == 'right'){
+                    this.x += Speed*2;
+                }
+                if(this.angle == 'left'){
+                    this.x -= Speed*2;
+                }
+                if(this.angle == 'up'){
+                    this.y -= Speed*2;
+                }
+                if(this.angle == 'down'){
+                    this.y += Speed*2;
+                }
+            }
+            out(){
+                var chk = false;
+                if(this.x < 0){
+                    chk = true;
+                }
+                if(this.x > 1270){
+                    chk = true;
+                }
+                if(this.y < 0){
+                    chk = true;
+                }
+                if(this.y > 710){
+                    chk = true;
+                }
+                return chk;
+            }
+        }
+        
+        var myId;
+        var mytank;
+        var myName;
+        var tanks = [];
+        var bullets = [];
+        var timer = 0;
+        var time = 0;
+        var kill = 0;
+
+        socket.on('user_id', function(data){
+            myId = data;
+        });
+
+        socket.on('change_name_client', function(data){
+            var tank;
+            for(var i = 0 ; i < tanks.length; i++){
+                if(tanks[i].id == myId){
+                    tank = tanks[i];
+                    break;
+                }
+            }
+            tank.name = data;
+        });
+
+        myName = "<%= myname %>";
+        socket.emit('change_name_server', myName);
+
+        socket.on('join_user', function(data){
+            for(var i = 0 ; i < tanks.length; i++){
+                if(tanks[i].id == data.id){
+                    return;
+                }
+            }
+            var tank = new Tank(data.id);
+            tank.x = data.x;
+            tank.y = data.y;
+            tank.width = data.width;
+            tank.height = data.height;
+            tank.color = data.color;
+            tank.name = data.name;
+            tank.angle = data.angle;
+
+            tanks.push(tank);
+        });
+
+        socket.on('update_state', function(data){
+            var tank;
+            for(var i = 0 ; i < tanks.length; i++){
+                if(tanks[i].id == data.id){
+                    tank = tanks[i];
+                    break;
+                }
+            }
+            if(!tank){
+                return;
+            }
+            tank.id = data.id;
+            tank.x = data.x;
+            tank.y = data.y;
+            tank.width = data.width;
+            tank.height = data.height;
+            tank.color = data.color;
+            tank.name = data.name;
+            tank.angle = data.angle;
+        });
+
+        socket.on('leave_user', function(data){
+            for(var i = 0 ; i < tanks.length; i++){
+                if(tanks[i].id == data){
+                    tanks.splice(i,1);
+                    break;
+                }
+            }
+        })
+
+        socket.on('update_bullet', function(data){
+            var bullet = new Bullet(data.id, data.angle);
+            bullet.color = data.color;
+            bullet.x = data.x;
+            bullet.y = data.y;
+            bullets.push(bullet);
+        })
+
+        socket.on('killuser', function(data){
+            if(data == myId){
+                kill++;
+            }
+        })
+
+        function sendDatatank() {
+            var start = new Date();
+            var tank;
+            for(var i = 0; i < tanks.length; ++i){
+                if(tanks[i].id == myId){
+                    tank = tanks[i];
+                    break;
+                }
+            }
+            var data = {};
+            data = {
+                id: tank.id,
+                x: tank.x,
+                y: tank.y,
+                width: tank.width,
+                height: tank.height,
+                color: tank.color,
+                name: tank.name,
+                angle: tank.angle,
+            };
+            if(data){
+                socket.emit("send_location", data);
+           }
+        }
+
+        function sendDataBullet(bullet){
+            if(bullet){
+                socket.emit("bullet_data", bullet);
+            }
+        }
+
+        setInterval(function() {
+            time += 1;
+        }, 1000);
+
+        function frame(){
+            animation = requestAnimationFrame(frame);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            timer++;
+
+            for(var i = 0; i < tanks.length; ++i){
+                if(tanks[i].id == myId){
+                    mytank = tanks[i];
+                    break;
+                }
+            }
+
+            if (mytank.x < 0){
+                mytank.x += Speed;
+            }
+            if (mytank.x > 1230){
+                mytank.x -= Speed;
+            }
+            if(mytank.y > 670){
+                mytank.y -= Speed;
+            }
+            if(mytank.y < 0){
+                mytank.y += Speed;
+            }  
+
+            if (rightPressed){
+                mytank.x += Speed;
+            }
+            if (leftPressed ){
+                mytank.x -= Speed;
+            }
+            if(upPressed ){
+                mytank.y -= Speed;
+            }
+            if(downPressed ){
+                mytank.y += Speed;
+            }
+
+            if (rightAttack){
+                mytank.angle = 'right';
+            }
+            if (leftAttack){
+                mytank.angle = 'left';
+            }
+            if(upAttack){
+                mytank.angle = 'up';
+            }
+            if(downAttack){
+                mytank.angle = 'down';
+            }
+
+            if(timer % 60 == 0){
+                if(mytank.angle == 'right'){
+                    var bullet = new Bullet(myId, 'right');
+                    sendDataBullet(bullet);
+                }
+                if(mytank.angle == 'left'){
+                    var bullet = new Bullet(myId, 'left');
+                    sendDataBullet(bullet);
+                }
+                if(mytank.angle == 'up'){
+                    var bullet = new Bullet(myId, 'up');
+                    sendDataBullet(bullet);
+                }
+                if(mytank.angle == 'down'){
+                    var bullet = new Bullet(myId, 'down');
+                    sendDataBullet(bullet);
+                }   
+            }
+
+            for(var i = 0; i < tanks.length; ++i){
+                var tank = tanks[i];
+                tank.draw();
+            }
+            
+            if(bullets.length > 0){
+                bullets.forEach(function(bullet, i){
+                    bullet.draw();
+                    bullet.move();
+
+                    if(bullet.id != myId){
+                        if(mytank.x <= bullet.x + bullet.width && bullet.x + bullet.width <= mytank.x + mytank.width && mytank.y <= bullet.y + bullet.height && bullet.y + bullet.height <= mytank.y + mytank.height){
+                            cancelAnimationFrame(animation);
+
+                            socket.emit('finish', {
+                                name : myName,
+                                killuser : bullet.id,
+                                kill : kill,
+                                time : time,
+                            });
+
+                            var newForm = $('<form></form>');
+                            newForm.attr("method","post"); 
+                            newForm.attr("action","/die"); 
+
+                            newForm.append($('<input/>', {type: 'text', name: 'killuser', value: bullet.id })); 
+                            newForm.append($('<input/>', {type: 'text', name: 'time', value: time })); 
+                            newForm.append($('<input/>', {type: 'text', name: 'kill', value: kill })); 
+                            
+                            newForm.appendTo('body');
+                            newForm.submit();                          
+                        };
+                    };
+                    if(bullet.out()){
+                        bullets.splice(i,1);
+                    };
+                });
+            };
+            
+            sendDatatank();
+        };
+
+        frame();
+        setInterval();
+
+    </script>
+</body>
+</html>
